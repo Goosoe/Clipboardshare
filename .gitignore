@@ -1,0 +1,12 @@
+.vs/
+*.db
+*.opendb
+*.user
+
+bin/
+bin-int/
+x64/
+x86/
+
+.idea/
+cmake*/
