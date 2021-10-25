@@ -10,3 +10,5 @@ x86/
 
 .idea/
 cmake*/
+
+out/

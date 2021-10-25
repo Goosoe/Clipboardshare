@@ -4,6 +4,6 @@
 cmake_minimum_required (VERSION 3.8)
 
 # Add source to this project's executable.
-add_executable (ClipboardShare "ClipboardShare.cpp" "ClipboardShare.h")
+add_executable (ClipboardShare "ClipboardShare.cpp" "ClipboardShare.h"  "Connector/AConnector.h" "Connector/WinConn.cpp" "Connector/MessageType.h" "Connector/AnswerType.h")
 
 # TODO: Add tests and install targets if needed.
