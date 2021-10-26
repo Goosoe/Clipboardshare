@@ -13,6 +13,7 @@ namespace Connector {
 	protected:
 			WSADATA wsaData;
 			int iResult = 0;
+			bool closeService = false;
 
 		public:
 			WinConn();

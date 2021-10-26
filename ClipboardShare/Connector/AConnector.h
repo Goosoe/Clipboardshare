@@ -16,8 +16,8 @@ namespace Connector {
 		#define DEFAULT_PORT "8008"
 		virtual bool broadcast(const std::string* message) = 0;
 		virtual bool disconnect() = 0;
-		virtual int connectToServer(const std::string* ip) = 0;
-		virtual int prepareServerSocket() = 0;
+		virtual int startClient(const std::string* ip) = 0;
+		virtual int startHost() = 0;
 		//virtual bool sendTo(const std::string* ip, std::string* message);
 
 	protected:

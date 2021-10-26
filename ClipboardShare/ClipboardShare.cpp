@@ -5,27 +5,26 @@
 #include <stdio.h>
 
 int main(){
-	char mode;
+	std::string input;
 	bool wrongInput = true;
 	Connector::AConnector *conn = new Connector::WinConn();
 	while (wrongInput) {
 		std::cout << "Which mode do you want to initialize? (h)ost or (c)lient? h/c" << std::endl;
-		std::cin >> mode;
+		std::getline(std::cin, input);
 		//server
-		if (mode == 'h') {
+		if (input.compare("h") == 0) {
 			conn->startHost();
 			wrongInput = false;
 		}
 		//client
-		else if (mode == 'c') {
+		else if (input.compare("c") == 0) {
 			std::cout << "What IP should it connect to? Press 'l' to localhost" << std::endl;
-			std::string ip;
-			std::cin >> ip;
-			if (ip.compare("l") == 0) {
+			std::getline(std::cin, input);
+			if (input.compare("l") == 0) {
 				//TODO: this sucks
-				ip = "127.0.0.1";
+				input = "127.0.0.1";
 			}
-				conn->startClient(&ip);
+				conn->startClient(&input);
 				wrongInput = false;
 		
 		}

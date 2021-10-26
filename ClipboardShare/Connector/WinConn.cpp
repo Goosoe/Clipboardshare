@@ -25,14 +25,14 @@ namespace Connector {
 		return false;
 	}
 	/*For the client*/
-	int WinConn::connectToServer(const std::string* ip) {
+	int WinConn::startClient(const std::string* ip) {
 
 		WSADATA wsaData;
 		SOCKET ConnectSocket = INVALID_SOCKET;
 		struct addrinfo* result = NULL,
 			* ptr = NULL,
 			hints;
-		const char* sendbuf = "this is a test";
+		std::string messageToSend = "handshake";
 		char recvbuf[DEFAULT_BUFLEN];
 		int iResult;
 		int recvbuflen = DEFAULT_BUFLEN;
@@ -60,7 +60,6 @@ namespace Connector {
 
 		// Attempt to connect to an address until one succeeds
 		for (ptr = result; ptr != NULL; ptr = ptr->ai_next) {
-
 			// Create a SOCKET for connecting to server
 			ConnectSocket = socket(ptr->ai_family, ptr->ai_socktype,
 				ptr->ai_protocol);
@@ -87,17 +86,19 @@ namespace Connector {
 			WSACleanup();
 			return 1;
 		}
-
-		// Send an initial buffer
-		iResult = send(ConnectSocket, sendbuf, (int) strlen(sendbuf), 0);
-		if (iResult == SOCKET_ERROR) {
-			printf("send failed with error: %d\n", WSAGetLastError());
-			closesocket(ConnectSocket);
-			WSACleanup();
-			return 1;
-		}
-
-		printf("Bytes Sent: %ld\n", iResult);
+		// Send until I close the connection
+		do {
+			std::cout << "What do you want to send to clipboard?" << std::endl << "> ";
+			std::getline(std::cin, messageToSend);
+			iResult = send(ConnectSocket, messageToSend.c_str(), messageToSend.size(), 0);
+			if (iResult == SOCKET_ERROR) {
+				printf("send failed with error: %d\n", WSAGetLastError());
+				closesocket(ConnectSocket);
+				WSACleanup();
+				return 1;
+			}
+			//TODO: thread send rcv
+		} while (!closeService);
 
 		// shutdown the connection since no more data will be sent
 		iResult = shutdown(ConnectSocket, SD_SEND);
@@ -110,7 +111,6 @@ namespace Connector {
 
 		// Receive until the peer closes the connection
 		do {
-
 			iResult = recv(ConnectSocket, recvbuf, recvbuflen, 0);
 			if (iResult > 0)
 				printf("Bytes received: %d\n", iResult);
@@ -129,7 +129,7 @@ namespace Connector {
 	}
 
 	/*For the server*/
-	int WinConn::prepareServerSocket() {
+	int WinConn::startHost() {
 
 		WSADATA wsaData;
 		int iResult;
@@ -210,11 +210,12 @@ namespace Connector {
 		do {
 
 			iResult = recv(ClientSocket, recvbuf, recvbuflen, 0);
-			if (iResult > 0) {
+			if (iResult >= 0) {
 				printf("Bytes received: %d\n", iResult);
 				std::cout << std::string(recvbuf).substr(0, iResult) << std::endl;
+
 				// Echo the buffer back to the sender
-				iSendResult = send(ClientSocket, recvbuf, iResult, 0);
+			/*	iSendResult = send(ClientSocket, messageToSend.c_str(), messageToSend.size(), 0);
 				if (iSendResult == SOCKET_ERROR) {
 					printf("send failed with error: %d\n", WSAGetLastError());
 					closesocket(ClientSocket);
@@ -222,9 +223,11 @@ namespace Connector {
 					return 1;
 				}
 				printf("Bytes sent: %d\n", iSendResult);
+			*/
 			}
-			else if (iResult == 0)
-				printf("Connection closing...\n");
+			//else if (iResult == 0)
+				//printf("Connection closing...\n");
+				//does nothing
 			else {
 				printf("recv failed with error: %d\n", WSAGetLastError());
 				closesocket(ClientSocket);
@@ -232,7 +235,7 @@ namespace Connector {
 				return 1;
 			}
 
-		} while (iResult > 0);
+		} while (!closeService);
 
 		// shutdown the connection since we're done
 		iResult = shutdown(ClientSocket, SD_SEND);
