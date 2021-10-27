@@ -14,16 +14,17 @@ namespace Connector {
 		WinConn();
 		void initServer() override;
 		void initClient(const std::string* ip) override;
-	protected:
 		bool broadcast(const std::string& msg) override;
-		bool disconnect() override;
 
-		void initClientSocketThread(const int typeOfConnection, const std::string* ip = nullptr) override;
-		void initServerSocketThread(const void* socket) override;
+	protected:
 
 	private:
 		//TODO: auxiliary function - Remove on CLIView implementation
 		void requestLocalInput();
-		std::vector<SOCKET> socketsToBroadcast;
+		void initClientSocket(const std::string* ip = nullptr);
+		void initServerSocket();
+		bool disconnect();
+		void receiveThread(const SOCKET& socket);
+		std::vector<SOCKET> sockets;
 	};
 }

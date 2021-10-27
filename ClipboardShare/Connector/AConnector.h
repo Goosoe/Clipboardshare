@@ -4,6 +4,7 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include<thread>
+#include "../Data/DataHandler.h"
 /*
 * Abstract class that all the different Connectors need to extend
 * Creates an interface which is common between all connectors.
@@ -16,22 +17,19 @@ namespace Connector {
 		AConnector(){};
 		virtual void initServer() = 0;
 		virtual void initClient(const std::string* ip) = 0;
+		virtual bool broadcast(const std::string& msg) = 0;
+		virtual void subscribeDataHandler(Data::DataHandler* handler);
 
 	protected:
 		#define DEFAULT_PORT "8008"
 		#define DEFAULT_BUFLEN 512
-		#define SERVER_TO_CLIENT 1
-		#define CLIENT_TO_SERVER 0
-
-		
+		bool isServer = false;
 		//std::vector<int> socketsToBroadcast;
-		virtual bool broadcast(const std::string& msg) = 0;
-		virtual bool disconnect() = 0;
-
+		//notifySubscribers()
+		//std::vector<subscribers> (processID?)
+		//virtual bool disconnect() = 0;
+		//virtual void receiveThread() = 0;
 		/*CLIENT FUNCTIONS*/
-		virtual void initClientSocketThread(const int typeOfConnection, const std::string* ip) = 0;
 
-		/*SERVER FUNCTIONS*/
-		virtual void initServerSocketThread(const void* socket) = 0;
 	};
 }

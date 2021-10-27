@@ -9,12 +9,12 @@ namespace Connector {
 
 
 	WinConn::WinConn() : AConnector() {
-	
+
 	}
 
 
 	bool WinConn::broadcast(const std::string& msg) {
-		for each (SOCKET socket in socketsToBroadcast) {
+		for each (SOCKET socket in sockets) {
 			send(socket, msg.c_str(), msg.size(), 0);
 		}
 		return true;
@@ -25,6 +25,8 @@ namespace Connector {
 
 	void WinConn::initServer() {
 		//TODO: this must change when CLIView is introduced
+		isServer = true;
+
 		std::thread inputThread = std::thread([this] {
 			requestLocalInput();
 		});
@@ -94,12 +96,12 @@ namespace Connector {
 		}
 		//Waiting for connections
 		while ((clientSocket = accept(listenSocket, NULL, NULL))) {
-			
+			sockets.push_back(clientSocket);
 			std::thread t = std::thread([this, clientSocket] {
-				initServerSocketThread(&clientSocket);
-			});
+				receiveThread(clientSocket);
+				});
 			t.detach();
-			//TODO:add to list 
+
 		}
 		//t.join/(
 
@@ -120,23 +122,16 @@ namespace Connector {
 		closesocket(clientSocket);
 		WSACleanup();
 	}
-	
+
 	void WinConn::initClient(const std::string* ip) {
-		
-		std::thread t = std::thread([this, ip] {
-			initClientSocketThread(SERVER_TO_CLIENT, ip);
-		});
-		std::thread t1 = std::thread([this, ip] {
-			initClientSocketThread(CLIENT_TO_SERVER, ip);
-		});
-		//TODO:
-		t1.detach();
-		t.join();
-		
+		std::thread inputThread = std::thread([this] {
+			requestLocalInput();
+			});
+		inputThread.detach();
+		initClientSocket(ip);
 	}
-		
-	
-	void WinConn::initClientSocketThread(const int typeOfConnection, const std::string* ip) {
+
+	void WinConn::initClientSocket(const std::string* ip) {
 
 		char recvbuf[DEFAULT_BUFLEN];
 		WSADATA wsaData;
@@ -194,39 +189,12 @@ namespace Connector {
 			WSACleanup();
 			return;
 		}
+		sockets.push_back(connectSocket);
 
-		//communicates to the server the desired type of connection
-		iResult = send(connectSocket, std::to_string(typeOfConnection).c_str(), std::to_string(typeOfConnection).size(), 0);
-		//if SERVER_TO_CLIENT
-		if (typeOfConnection) {
-			do {
-				//waits for broadcasts
-				iResult = recv(connectSocket, recvbuf, DEFAULT_BUFLEN, 0);
-				if (iResult >= 0) {
-					printf("\nReceived Message: %s\n", std::string(recvbuf).substr(0, iResult).c_str());
-					//TODO: copy to clipboard
-				}
-				else
-					break;
-				//TODO: WHILE TRUE
-			} while (1);
-		}
-		else {
-			do {
-				std::string messageToSend = std::to_string(typeOfConnection);
-				std::cout << "What do you want to send to clipboard?" << std::endl << "> ";
-				std::getline(std::cin, messageToSend);
-				iResult = send(connectSocket, messageToSend.c_str(), messageToSend.size(), 0);
-				if (iResult == SOCKET_ERROR) {
-					printf("send failed with error: %d\n", WSAGetLastError());
-					closesocket(connectSocket);
-					WSACleanup();
-					return;
-				}
-				//TODO: WHILE TRUE
-			} while (1);
-		}
-		
+		std::thread t = std::thread([this, connectSocket] {
+			receiveThread(connectSocket);
+			});
+		t.join();
 
 		// shutdown the connection since no more data will be sent
 		iResult = shutdown(connectSocket, SD_SEND);
@@ -242,46 +210,39 @@ namespace Connector {
 		WSACleanup();
 	}
 
-
-	void WinConn::initServerSocketThread(const void* socket) {
-		SOCKET clientSock = *(SOCKET*) socket;
-		char recvbuf[DEFAULT_BUFLEN];
-
-		int iResult = recv(clientSock, recvbuf, DEFAULT_BUFLEN, 0);
-
-		if (iResult == SOCKET_ERROR) {
-			printf("recv failed with error: %d\n", WSAGetLastError());
-			closesocket(clientSock);
-			WSACleanup();
+	void WinConn::receiveThread(const SOCKET& socket) {
+		if (!sockets.size()) {
 			return;
 		}
-		//	std::cout << std::string(recvbuf).substr(0, iResult) << std::endl;
-		std::string msg = std::string(recvbuf).substr(0, iResult);
-		
-		//IF SERVER_TO_CLIENT CONNECTION
-		if (std::stoi(msg)) {
-			socketsToBroadcast.push_back(clientSock);
-		}
-		//else CLIENT_TO_SERVER CONNECTION
-		else{
-			do {
-				iResult = recv(clientSock, recvbuf, DEFAULT_BUFLEN, 0);
-				if (iResult >= 0) {
-					printf("\nReceived Message: %s\n", std::string(recvbuf).substr(0, iResult).c_str());
-					broadcast(std::string(recvbuf).substr(0, iResult));
+
+		char recvbuf[DEFAULT_BUFLEN];
+		do {
+			//waits for broadcasts
+			int iResult = recv(socket, recvbuf, DEFAULT_BUFLEN, 0);
+			if (iResult >= 0) {
+				std::string msg = std::string(recvbuf).substr(0, iResult);
+				printf("\nReceived Message: %s\n", msg.c_str());
+				if (isServer) {
+					broadcast(msg);
 				}
-				//TODO: WHILE TRUE
-			} while (1);
-		}
+				//TODO: copy to clipboard
+			}
+			else {
+				closesocket(sockets.at(0));
+				WSACleanup();
+				break;
+			}
+			//TODO: WHILE TRUE
+		} while (1);
 	}
 
 	void WinConn::requestLocalInput() {
 		do {
-			std::string messageToSend = std::to_string(CLIENT_TO_SERVER);
+			std::string messageToSend;
 			std::cout << "What do you want to send to clipboard?" << std::endl << "> ";
 			std::getline(std::cin, messageToSend);
 			broadcast(messageToSend);
 			//TODO: WHILE TRUE
 		} while (1);
 	}
-}
+};
