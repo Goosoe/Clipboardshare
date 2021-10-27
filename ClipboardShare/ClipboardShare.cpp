@@ -7,13 +7,13 @@
 int main(){
 	std::string input;
 	bool wrongInput = true;
-	Connector::AConnector *conn = new Connector::WinConn();
+	Connector::WinConn conn = Connector::WinConn() ;
 	while (wrongInput) {
 		std::cout << "Which mode do you want to initialize? (h)ost or (c)lient? h/c" << std::endl;
 		std::getline(std::cin, input);
 		//server
 		if (input.compare("h") == 0) {
-			conn->startHost();
+			conn.initServer();
 			wrongInput = false;
 		}
 		//client
@@ -24,8 +24,10 @@ int main(){
 				//TODO: this sucks
 				input = "127.0.0.1";
 			}
-				conn->startClient(&input);
-				wrongInput = false;
+			//needs to sent input like this because its the only way the
+			//information is replicated and not lost when getting out of scope
+			conn.initClient(&input);
+			wrongInput = false;
 		
 		}
 		else {

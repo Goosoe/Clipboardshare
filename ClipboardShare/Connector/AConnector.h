@@ -3,49 +3,35 @@
 #include<string>
 #include <winsock2.h>
 #include <ws2tcpip.h>
-#include"AnswerType.h"
-#include"MessageType.h"
+#include<thread>
 /*
-* Abstract class that all the different Connectors need to override
+* Abstract class that all the different Connectors need to extend
 * Creates an interface which is common between all connectors.
 */
 namespace Connector {
 	class AConnector {
 
 	public:
-		#define DEFAULT_PORT "8008"
-		virtual bool broadcast(const std::string* message) = 0;
-		virtual bool disconnect() = 0;
-		virtual int startClient(const std::string* ip) = 0;
-		virtual int startHost() = 0;
-		//virtual bool sendTo(const std::string* ip, std::string* message);
+		/*Server constructor*/
+		AConnector(){};
+		virtual void initServer() = 0;
+		virtual void initClient(const std::string* ip) = 0;
 
 	protected:
-		//bool isHost;
-		//const std::string* ip;
-		std::vector<const std::string*> connections;
+		#define DEFAULT_PORT "8008"
+		#define DEFAULT_BUFLEN 512
+		#define SERVER_TO_CLIENT 1
+		#define CLIENT_TO_SERVER 0
+
 		
-		///*Constructor for the server*/
-		//AConnector(const bool isHost = true) {
-		//	this->isHost = true; 
-		//};
+		//std::vector<int> socketsToBroadcast;
+		virtual bool broadcast(const std::string& msg) = 0;
+		virtual bool disconnect() = 0;
 
-		/*Constructor for the client*/
-		//AConnector() { 
-		//	this->isHost = false;
-		//	this->ip = ip;
-		//};
+		/*CLIENT FUNCTIONS*/
+		virtual void initClientSocketThread(const int typeOfConnection, const std::string* ip) = 0;
 
-		void addConnection(const std::string* ip) { connections.push_back(ip); };
-
-		void removeConnection(const std::string* ipToRemove) {
-			for (int i = 0; i < connections.size(); i++) {
-				if (connections.at(i)->compare(*ipToRemove) == 0) {
-					//TODO: Check if it erases correctly
-					connections.erase(connections.begin() + i);
-					break;
-				}
-			}
-		};
+		/*SERVER FUNCTIONS*/
+		virtual void initServerSocketThread(const void* socket) = 0;
 	};
 }
