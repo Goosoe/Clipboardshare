@@ -12,8 +12,6 @@ namespace Connector {
 	//WinConn::WinConn() : AConnector() {
 
 	//}
-
-
 	bool WinConn::broadcast(const std::string* msg) {
 		for each (int socket in sockets) {
 			send(socket, msg->c_str(), msg->size(), 0);
@@ -25,8 +23,6 @@ namespace Connector {
 	}
 
 	void WinConn::initServer() {
-		//TODO: this must change when CLIView is introduced
-		isServer = true;
 		WSADATA wsaData;
 		int iResult;
 
@@ -217,4 +213,4 @@ namespace Connector {
 			//TODO: WHILE TRUE
 		} while (1);
 	}
-};
+}

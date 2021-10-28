@@ -6,6 +6,7 @@
 #include <ws2tcpip.h>
 #include <iphlpapi.h>
 #include <stdio.h>
+#include<thread>
 
 
 namespace Connector {

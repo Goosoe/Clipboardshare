@@ -1,9 +1,7 @@
 #pragma once
 #include <vector>
 #include<string>
-#include <winsock2.h>
-#include <ws2tcpip.h>
-#include<thread>
+
 namespace Data{
 	class DataHandler;
 }
@@ -25,7 +23,6 @@ namespace Connector {
 	protected:
 		#define DEFAULT_PORT "8008"
 		#define DEFAULT_BUFLEN 512
-		bool isServer = false;
 		Data::DataHandler* handler = nullptr;
 		//socket ID's
 		std::vector<int> sockets;

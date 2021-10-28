@@ -7,3 +7,4 @@
 #include"Connector/AConnector.h"
 #include"Connector/WinConn.h"
 #include"Data/DataHandler.h"
+#include"Ui/CliView.h"
