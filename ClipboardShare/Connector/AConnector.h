@@ -17,18 +17,23 @@ namespace Connector {
 		AConnector(){};
 		virtual void initServer() = 0;
 		virtual void initClient(const std::string* ip) = 0;
-		virtual bool broadcast(const std::string& msg) = 0;
-		virtual void subscribeDataHandler(Data::DataHandler* handler);
+		virtual bool broadcast(const std::string* msg) = 0;
+		virtual void subscribeDataHandler(Data::DataHandler* handler) = 0;
 
 	protected:
 		#define DEFAULT_PORT "8008"
 		#define DEFAULT_BUFLEN 512
 		bool isServer = false;
+		Data::DataHandler* handler;
+		//socket ID's
+		std::vector<int> sockets;
+		
+		virtual void receiveThread(const int socket) = 0;
+		
 		//std::vector<int> socketsToBroadcast;
 		//notifySubscribers()
 		//std::vector<subscribers> (processID?)
 		//virtual bool disconnect() = 0;
-		//virtual void receiveThread() = 0;
 		/*CLIENT FUNCTIONS*/
 
 	};

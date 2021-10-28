@@ -13,9 +13,9 @@ namespace Connector {
 	}
 
 
-	bool WinConn::broadcast(const std::string& msg) {
-		for each (SOCKET socket in sockets) {
-			send(socket, msg.c_str(), msg.size(), 0);
+	bool WinConn::broadcast(const std::string* msg) {
+		for each (int socket in sockets) {
+			send(socket, msg->c_str(), msg->size(), 0);
 		}
 		return true;
 	}
@@ -210,7 +210,7 @@ namespace Connector {
 		WSACleanup();
 	}
 
-	void WinConn::receiveThread(const SOCKET& socket) {
+	void WinConn::receiveThread(const int socket) {
 		if (!sockets.size()) {
 			return;
 		}
@@ -221,14 +221,16 @@ namespace Connector {
 			int iResult = recv(socket, recvbuf, DEFAULT_BUFLEN, 0);
 			if (iResult >= 0) {
 				std::string msg = std::string(recvbuf).substr(0, iResult);
+				//TODO:
+				//handler->handleMessage(&msg);
 				printf("\nReceived Message: %s\n", msg.c_str());
 				if (isServer) {
-					broadcast(msg);
+					broadcast(&msg);
 				}
 				//TODO: copy to clipboard
 			}
 			else {
-				closesocket(sockets.at(0));
+				closesocket(*(SOCKET*)(sockets.at(0)));
 				WSACleanup();
 				break;
 			}
@@ -241,8 +243,13 @@ namespace Connector {
 			std::string messageToSend;
 			std::cout << "What do you want to send to clipboard?" << std::endl << "> ";
 			std::getline(std::cin, messageToSend);
-			broadcast(messageToSend);
+			broadcast(&messageToSend);
 			//TODO: WHILE TRUE
 		} while (1);
 	}
+
+	void WinConn::subscribeDataHandler(Data::DataHandler* handler) {
+		this->handler = handler;
+	}
+
 };
