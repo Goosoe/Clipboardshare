@@ -7,23 +7,21 @@
 #include <iphlpapi.h>
 #include <stdio.h>
 
+
 namespace Connector {
 	class WinConn : public AConnector {
 	public:
 		/*Windows server constructor*/
-		WinConn();
+		//WinConn();
+		/*The init classes are supposed to be initialized in a thread*/
 		void initServer() override;
 		void initClient(const std::string* ip) override;
 		bool broadcast(const std::string* msg) override;
-		void subscribeDataHandler(Data::DataHandler* handler) override;
 	
 	protected:
-		void receiveThread(const int socket) override;
 
 	private:
-		//TODO: auxiliary function - Remove/Move to on CLIView implementation
-		void requestLocalInput();
-		void initClientSocket(const std::string* ip = nullptr);
+		void receiveLoop(const int socket);
 		bool disconnect();
 	};
 }

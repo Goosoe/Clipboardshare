@@ -1,6 +1,7 @@
 #pragma once
 #include "WinConn.h"
 #include <iostream>
+#include "../Data/DataHandler.h"
 
 
 namespace Connector {
@@ -8,9 +9,9 @@ namespace Connector {
 	struct addrinfo* result = NULL, * ptr = NULL, hints;
 
 
-	WinConn::WinConn() : AConnector() {
+	//WinConn::WinConn() : AConnector() {
 
-	}
+	//}
 
 
 	bool WinConn::broadcast(const std::string* msg) {
@@ -26,11 +27,6 @@ namespace Connector {
 	void WinConn::initServer() {
 		//TODO: this must change when CLIView is introduced
 		isServer = true;
-
-		std::thread inputThread = std::thread([this] {
-			requestLocalInput();
-		});
-
 		WSADATA wsaData;
 		int iResult;
 
@@ -98,7 +94,7 @@ namespace Connector {
 		while ((clientSocket = accept(listenSocket, NULL, NULL))) {
 			sockets.push_back(clientSocket);
 			std::thread t = std::thread([this, clientSocket] {
-				receiveThread(clientSocket);
+				receiveLoop(clientSocket);
 				});
 			t.detach();
 
@@ -118,21 +114,11 @@ namespace Connector {
 		}
 
 		// cleanup
-		inputThread.join();
 		closesocket(clientSocket);
 		WSACleanup();
 	}
 
 	void WinConn::initClient(const std::string* ip) {
-		std::thread inputThread = std::thread([this] {
-			requestLocalInput();
-			});
-		inputThread.detach();
-		initClientSocket(ip);
-	}
-
-	void WinConn::initClientSocket(const std::string* ip) {
-
 		char recvbuf[DEFAULT_BUFLEN];
 		WSADATA wsaData;
 		SOCKET connectSocket = INVALID_SOCKET;
@@ -191,10 +177,8 @@ namespace Connector {
 		}
 		sockets.push_back(connectSocket);
 
-		std::thread t = std::thread([this, connectSocket] {
-			receiveThread(connectSocket);
-			});
-		t.join();
+		receiveLoop(connectSocket);
+	
 
 		// shutdown the connection since no more data will be sent
 		iResult = shutdown(connectSocket, SD_SEND);
@@ -210,8 +194,9 @@ namespace Connector {
 		WSACleanup();
 	}
 
-	void WinConn::receiveThread(const int socket) {
-		if (!sockets.size()) {
+	void WinConn::receiveLoop(const int socket) {
+		if (!sockets.size() || handler == nullptr) {
+			//TODO: Error
 			return;
 		}
 
@@ -221,12 +206,7 @@ namespace Connector {
 			int iResult = recv(socket, recvbuf, DEFAULT_BUFLEN, 0);
 			if (iResult >= 0) {
 				std::string msg = std::string(recvbuf).substr(0, iResult);
-				//TODO:
-				//handler->handleMessage(&msg);
-				printf("\nReceived Message: %s\n", msg.c_str());
-				if (isServer) {
-					broadcast(&msg);
-				}
+				handler->handleMessage(&msg);
 				//TODO: copy to clipboard
 			}
 			else {
@@ -237,19 +217,4 @@ namespace Connector {
 			//TODO: WHILE TRUE
 		} while (1);
 	}
-
-	void WinConn::requestLocalInput() {
-		do {
-			std::string messageToSend;
-			std::cout << "What do you want to send to clipboard?" << std::endl << "> ";
-			std::getline(std::cin, messageToSend);
-			broadcast(&messageToSend);
-			//TODO: WHILE TRUE
-		} while (1);
-	}
-
-	void WinConn::subscribeDataHandler(Data::DataHandler* handler) {
-		this->handler = handler;
-	}
-
 };
