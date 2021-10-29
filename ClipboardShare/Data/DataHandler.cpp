@@ -5,9 +5,10 @@
 namespace Data {
 	void DataHandler::broadcast(const std::string* message) {
 		if (connector == nullptr || view == nullptr) {
-			//TODO:ERROR
+			std::cout << "The connector or view is not linked to this DataHandler" << std::endl;
 			return;
 		}
+		//std::cout << std::endl << "sending message: " << *message << std::endl;
 		connector->broadcast(message);
 		view->updateScreen(message);
 	}
@@ -20,13 +21,13 @@ namespace Data {
 		}
 		else {
 			if (view == nullptr) {
-				//TODO:ERROR
+				std::cout << "The view is not connected to this DataHandler" << std::endl;
 				return;
 			}
 			view->updateScreen(message);
 		}
 	}
-	void DataHandler::initProgram(std::string* ip = nullptr) {
+	void DataHandler::initProgram(const std::string* ip) {
 		if (isServer) {
 			connector->initServer();
 		}

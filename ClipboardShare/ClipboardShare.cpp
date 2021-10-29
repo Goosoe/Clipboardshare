@@ -3,7 +3,7 @@
 
 #include "ClipboardShare.h"
 #include <stdio.h>
-
+#include <thread>
 //TODO: temporary before having cli
 //void readInput(Data::DataHandler& dHandler) {
 //	do {
@@ -16,15 +16,16 @@
 //}
 
 int main(){
-	std::string input;
-	bool wrongInput = true;
+
 	Connector::WinConn conn = Connector::WinConn() ;
 	Data::DataHandler dHandler = Data::DataHandler(&conn);
 	conn.setDataHandler(&dHandler);
 	Ui::CliView view = Ui::CliView(&dHandler);
+	dHandler.setView(&view);
 	
-
-	
+	view.readInputLoop();
+	//waits for the ui input thread to finish
+	//view.getViewThread()->join();
 	//readInput(dHandler);
 		
 	//std::cin.get();

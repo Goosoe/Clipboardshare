@@ -2,7 +2,7 @@
 #include "WinConn.h"
 #include <iostream>
 #include "../Data/DataHandler.h"
-
+#include <thread>
 
 namespace Connector {
 
@@ -87,6 +87,7 @@ namespace Connector {
 			return;
 		}
 		//Waiting for connections
+
 		while ((clientSocket = accept(listenSocket, NULL, NULL))) {
 			sockets.push_back(clientSocket);
 			std::thread t = std::thread([this, clientSocket] {
@@ -206,7 +207,7 @@ namespace Connector {
 				//TODO: copy to clipboard
 			}
 			else {
-				closesocket(*(SOCKET*)(sockets.at(0)));
+				closesocket(*(SOCKET*)(socket));
 				WSACleanup();
 				break;
 			}

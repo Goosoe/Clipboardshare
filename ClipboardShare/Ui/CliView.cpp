@@ -1,7 +1,7 @@
 #pragma once
 #include "CliView.h"
 #include "..\Data\DataHandler.h"
-#include <thread>
+
 namespace Ui {
 
 	CliView::CliView(Data::DataHandler* dHandler) {
@@ -12,7 +12,7 @@ namespace Ui {
 		}
 		while (wrongInput) {
 			std::cout << "Which mode do you want to initialize? (h)ost or (c)lient? h/c" << std::endl;
-			std::string input = *readInput();
+			std::string input = readInput();
 
 			//server
 			if (input.compare("h") == 0) {
@@ -22,7 +22,7 @@ namespace Ui {
 			//client
 			else if (input.compare("c") == 0) {
 				std::cout << "What IP should it connect to? Press 'l' to localhost" << std::endl;
-				input = *readInput();
+				input = readInput();
 				if (input.compare("l") == 0) {
 					//TODO: this sucks
 					input = "127.0.0.1";
@@ -34,51 +34,51 @@ namespace Ui {
 				std::cout << "Wrong input" << std::endl;
 			}
 			if (!wrongInput) {
-				std::thread t = std::thread([&dHandler, &input] {
-					dHandler->initProgram(&input);
+				std::thread t = std::thread(
+					[this, dHandler, input]() {
+						dHandler->initProgram(&input);
 					});
 				t.detach();
-
 			}
 		}
-		std::thread t = std::thread([this] {
-			readInputThread();
-			});
-		t.detach();
-
+		updateScreen(&std::string(""));
 	}
 
 	void CliView::updateScreen(const std::string* clipboardMsg) {
-		//TODO:No bueno solution. Unnecessary cleanups
-		screen.lines.clear();
-		clearScreen();
 
+		screenLock.lock();
 		if (isConnected) {
-			if (isServer) {
-				screen.banner = "HOST\n";
+			if (dHandler->getServerFlag()) {
+				std::cout << "\n\n\nHOST\n";
 			}
 			else {
-				screen.banner = "CLIENT\n";
+				std::cout << "\n\n\nCLIENT\n";
 			}
 			//screen.subBanner =
-			screen.lines.push_back(&screen.banner);
-			screen.lines.push_back(&screen.subBanner);
-			screen.lines.push_back(&std::string("Clipboard\n> " + *clipboardMsg));
-			screen.lines.push_back(&std::string("Share to clipboard\n> "));
+			std::cout << "\n\n";
+			std::cout << "Clipboard\n> " + *clipboardMsg + "\n";
+			std::cout << "Share to clipboard\n> ";
 		}
+		screenLock.unlock();
 	}
 
-	std::string* CliView::readInput() {
+	std::string CliView::readInput() {
 		std::string messageToSend;
 		std::getline(std::cin, messageToSend);
-		return &messageToSend;
+		return messageToSend;
 	}
 
-	void CliView::readInputThread() {
+	void CliView::readInputLoop() {
+		std::string input;
 		while (1) {
-			dHandler->broadcast(readInput());
+			input = readInput();
+			dHandler->broadcast(&input);
 		}
 	}
+
+	void CliView::clearScreen() {
+		/*TODO: not safe*/
+		system("cls");
+	}
+
 }
-
-

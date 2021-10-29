@@ -2,19 +2,21 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <thread>
+#include <mutex>
 
-//namespace Data {
-//	class DataHandler;
-//};
+namespace Data {
+	class DataHandler;
+};
 
 namespace Ui {
-	struct Screen {
-		std::string banner = "ClipBoard";
-		std::string subBanner = "\n";
-		std::vector<std::string*> lines;
-	};
-
+	//struct Screen {
+	//	std::string banner = "ClipBoard";
+	//	std::string subBanner = "\n";
+	//	std::vector<std::string> lines;
+	//};
 	//Abstract CLI class that the cmd and bash will need to implement
+	static std::mutex screenLock;
 	class CliView {
 	public:
 		CliView(Data::DataHandler* dHandler);
@@ -23,26 +25,26 @@ namespace Ui {
 
 		void setConnectedFlag(bool isConnected) {
 			this->isConnected = isConnected;
-		};
-
-		void setServerFlag(bool isServer) {
-			this->isServer = isServer;
-		};
+		}
 
 		void setDataHandler(Data::DataHandler* dHandler) { this->dHandler = dHandler; };
+
+		std::thread* getViewThread() {
+			return inputThread;
+		}
+		void readInputLoop();
 
 	private:
 		Data::DataHandler* dHandler;
 		bool isConnected;
-		bool isServer;
-		Screen screen;
+		//Screen screen;
+		std::thread* inputThread;
+		/*std::thread* screenThread;*/
 
+		//concurrency::concurrent_queue<std::string> updateQueue;
 
-		/*This works for Linux & Windows apparently*/
-		void clearScreen() { std::cout << "\033[2J\033[1;1H"; };
-
-		std::string* readInput();
-
-		void readInputThread();
+		//void screenUpdateThread();
+		void clearScreen();
+		std::string readInput();
 	};
 }
