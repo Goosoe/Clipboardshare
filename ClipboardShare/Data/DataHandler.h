@@ -1,9 +1,10 @@
 #pragma once
 #include<string>
-namespace Connector{
+#include "../Bridge/SysBridge.h"
+namespace Connector {
 	class AConnector;
 }
-namespace Ui{
+namespace Ui {
 	class CliView;
 }
 
@@ -19,7 +20,7 @@ namespace Data {
 		void handleMessage(const std::string* message);
 		void setConnector(Connector::AConnector* connector) { this->connector = connector; };
 		void setView(Ui::CliView* view) { this->view = view; };
-		void initProgram(const std::string* ip = nullptr);
+		void initSocket(const std::string* ip = nullptr);
 		void setServerFlag(const bool isServer) { this->isServer = isServer; };
 		bool getServerFlag() const { return isServer; };
 	private:

@@ -4,10 +4,46 @@
 
 namespace Ui {
 
+	std::mutex CliView::screenLock;
+
 	CliView::CliView(Data::DataHandler* dHandler) {
-		bool wrongInput = true;
 		setDataHandler(dHandler);
+		//must be the last thing being called
+		getSetupInput();
+	}
+
+	void CliView::updateScreen(const std::string* clipboardMsg) {
+		//if (clipboardMsg->empty()) {
+		//	clipboardMsg = const_cast<const std::string*>(&oldMessage);
+		//}
+		Bridge::SysBridge::clearWindow();
+		if (isConnected) {
+			screenLock.lock();
+			if (dHandler->getServerFlag()) {
+				std::cout << "HOST" << std::endl;
+			}
+			else {
+				std::cout << "CLIENT" << std::endl;
+			}
+			//screen.subBanner =
+			std::cout << "Clipboard\n> " + *clipboardMsg << std::endl;
+			std::cout << "Share to clipboard\n> ";
+			screenLock.unlock();
+		}
+	}
+
+	std::string CliView::readInput() {
+		std::string messageToSend;
+		std::getline(std::cin, messageToSend);
+		//copies the message 
+		//oldMessage = std::string(messageToSend);
+		return messageToSend;
+	}
+
+	void CliView::getSetupInput() {
+		bool wrongInput = true;
 		if (dHandler == nullptr) {
+			std::cout << "DataHandler not defined" << std::endl;
 			return;
 		}
 		while (wrongInput) {
@@ -35,37 +71,13 @@ namespace Ui {
 			}
 			if (!wrongInput) {
 				std::thread t = std::thread(
-					[this, dHandler, input]() {
-						dHandler->initProgram(&input);
+					[this, input]() {
+						dHandler->initSocket(&input);
 					});
 				t.detach();
 			}
 		}
 		updateScreen(&std::string(""));
-	}
-
-	void CliView::updateScreen(const std::string* clipboardMsg) {
-
-		screenLock.lock();
-		if (isConnected) {
-			if (dHandler->getServerFlag()) {
-				std::cout << "\n\n\nHOST\n";
-			}
-			else {
-				std::cout << "\n\n\nCLIENT\n";
-			}
-			//screen.subBanner =
-			std::cout << "\n\n";
-			std::cout << "Clipboard\n> " + *clipboardMsg + "\n";
-			std::cout << "Share to clipboard\n> ";
-		}
-		screenLock.unlock();
-	}
-
-	std::string CliView::readInput() {
-		std::string messageToSend;
-		std::getline(std::cin, messageToSend);
-		return messageToSend;
 	}
 
 	void CliView::readInputLoop() {
@@ -75,10 +87,4 @@ namespace Ui {
 			dHandler->broadcast(&input);
 		}
 	}
-
-	void CliView::clearScreen() {
-		/*TODO: not safe*/
-		system("cls");
-	}
-
 }

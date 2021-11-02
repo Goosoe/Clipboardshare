@@ -26,14 +26,5 @@ namespace Connector {
 		Data::DataHandler* handler = nullptr;
 		//socket ID's
 		std::vector<int> sockets;
-		
-		//virtual void receiveLoop(const int socket) = 0;
-		
-		//std::vector<int> socketsToBroadcast;
-		//notifySubscribers()
-		//std::vector<subscribers> (processID?)
-		//virtual bool disconnect() = 0;
-		/*CLIENT FUNCTIONS*/
-
 	};
 }

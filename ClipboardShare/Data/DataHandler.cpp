@@ -3,19 +3,25 @@
 #include "../Connector/AConnector.h"
 #include "../Ui/CliView.h"
 namespace Data {
+
+	/*Broadcasts a message if it's valid (not empty)*/
 	void DataHandler::broadcast(const std::string* message) {
 		if (connector == nullptr || view == nullptr) {
 			std::cout << "The connector or view is not linked to this DataHandler" << std::endl;
 			return;
 		}
-		//std::cout << std::endl << "sending message: " << *message << std::endl;
+		if (message->empty()) {
+			return;
+		}
 		connector->broadcast(message);
 		view->updateScreen(message);
 	}
 
 	void DataHandler::handleMessage(const std::string* message) {
-		//TODO: Send to CLI & put in clipboard
-		std::cout << std::endl << "Received message: " << *message << std::endl;
+		if (message->empty()) {
+			return;
+		}
+
 		if (isServer) {
 			broadcast(message);
 		}
@@ -25,9 +31,11 @@ namespace Data {
 				return;
 			}
 			view->updateScreen(message);
+			Bridge::SysBridge::sendToClipboard(message);
 		}
 	}
-	void DataHandler::initProgram(const std::string* ip) {
+
+	void DataHandler::initSocket(const std::string* ip) {
 		if (isServer) {
 			connector->initServer();
 		}

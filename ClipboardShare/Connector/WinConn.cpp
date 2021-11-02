@@ -8,10 +8,6 @@ namespace Connector {
 
 	struct addrinfo* result = NULL, * ptr = NULL, hints;
 
-
-	//WinConn::WinConn() : AConnector() {
-
-	//}
 	bool WinConn::broadcast(const std::string* msg) {
 		for each (int socket in sockets) {
 			send(socket, msg->c_str(), msg->size(), 0);
@@ -19,10 +15,12 @@ namespace Connector {
 		return true;
 	}
 	bool WinConn::disconnect() {
+		//TODO:
 		return false;
 	}
 
 	void WinConn::initServer() {
+
 		WSADATA wsaData;
 		int iResult;
 
@@ -86,32 +84,18 @@ namespace Connector {
 			WSACleanup();
 			return;
 		}
-		//Waiting for connections
 
+		//accepting clients while on
 		while ((clientSocket = accept(listenSocket, NULL, NULL))) {
 			sockets.push_back(clientSocket);
 			std::thread t = std::thread([this, clientSocket] {
 				receiveLoop(clientSocket);
 				});
 			t.detach();
-
 		}
-		//t.join/(
 
 		// No longer need server socket
 		closesocket(listenSocket);
-
-		// shutdown the connection since we're done
-		iResult = shutdown(clientSocket, SD_SEND);
-		if (iResult == SOCKET_ERROR) {
-			printf("shutdown failed with error: %d\n", WSAGetLastError());
-			closesocket(clientSocket);
-			WSACleanup();
-			return;
-		}
-
-		// cleanup
-		closesocket(clientSocket);
 		WSACleanup();
 	}
 
@@ -186,32 +170,30 @@ namespace Connector {
 			return;
 		}
 
-		// cleanup
-		closesocket(connectSocket);
 		WSACleanup();
 	}
 
+	//listens for messages from the given socket
 	void WinConn::receiveLoop(const int socket) {
 		if (!sockets.size() || handler == nullptr) {
-			//TODO: Error
+			std::cout << "No socket connection or DataHandler defined" << std::endl;
 			return;
 		}
 
 		char recvbuf[DEFAULT_BUFLEN];
+		int iResult;
 		do {
-			//waits for broadcasts
-			int iResult = recv(socket, recvbuf, DEFAULT_BUFLEN, 0);
-			if (iResult >= 0) {
+			iResult = recv(socket, recvbuf, DEFAULT_BUFLEN, 0);
+			if (iResult > 0) {
 				std::string msg = std::string(recvbuf).substr(0, iResult);
 				handler->handleMessage(&msg);
 				//TODO: copy to clipboard
 			}
 			else {
-				closesocket(*(SOCKET*)(socket));
-				WSACleanup();
+				iResult = closesocket(socket);
 				break;
 			}
-			//TODO: WHILE TRUE
-		} while (1);
+		} while (iResult > 0);
+		//TODO: remove 
 	}
 }

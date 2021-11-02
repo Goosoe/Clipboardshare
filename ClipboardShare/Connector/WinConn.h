@@ -9,9 +9,6 @@
 namespace Connector {
 	class WinConn : public AConnector {
 	public:
-		/*Windows server constructor*/
-		//WinConn();
-		/*The init classes are supposed to be initialized in a thread*/
 		void initServer() override;
 		void initClient(const std::string* ip) override;
 		bool broadcast(const std::string* msg) override;
