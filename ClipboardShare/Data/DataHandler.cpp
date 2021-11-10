@@ -21,7 +21,7 @@ namespace Data {
 		if (message->msg->empty()) {
 			return;
 		}
-		if (message->toSend || isServer) {
+		if (message->toBroadcast || isServer) {
 			broadcast(message);
 		}
 		else {
