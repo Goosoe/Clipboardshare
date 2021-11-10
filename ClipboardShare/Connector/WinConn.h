@@ -11,7 +11,7 @@ namespace Connector {
 	public:
 		void initServer() override;
 		void initClient(const std::string* ip) override;
-		bool broadcast(const std::string* msg) override;
+		bool broadcast(Data::Message* message) override;
 	
 	protected:
 

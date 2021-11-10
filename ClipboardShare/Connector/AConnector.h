@@ -3,6 +3,7 @@
 #include <string>
 
 namespace Data{
+	struct Message;
 	class DataHandler;
 }
 
@@ -17,7 +18,7 @@ namespace Connector {
 		AConnector(){};
 		virtual void initServer() = 0;
 		virtual void initClient(const std::string* ip) = 0;
-		virtual bool broadcast(const std::string* msg) = 0;
+		virtual bool broadcast(Data::Message* message) = 0;
 		virtual void setDataHandler(Data::DataHandler* handler) { this->handler = handler; };
 
 	protected:

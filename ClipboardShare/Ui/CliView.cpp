@@ -84,7 +84,9 @@ namespace Ui {
 		std::string input;
 		while (1) {
 			input = readInput();
-			dHandler->broadcast(&input);
+			Data::Message msg;
+			msg.msg = &input;
+			dHandler->handleMessage(&msg);
 		}
 	}
 }

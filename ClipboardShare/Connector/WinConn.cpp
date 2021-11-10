@@ -8,9 +8,11 @@ namespace Connector {
 
 	struct addrinfo* result = NULL, * ptr = NULL, hints;
 
-	bool WinConn::broadcast(const std::string* msg) {
+	bool WinConn::broadcast(Data::Message* message) {
 		for each (int socket in sockets) {
-			send(socket, msg->c_str(), msg->size(), 0);
+			if (socket != message->senderSocket) {
+				send(socket, message->msg->c_str(), message->msg->size(), 0);
+			}
 		}
 		return true;
 	}
@@ -186,14 +188,13 @@ namespace Connector {
 			iResult = recv(socket, recvbuf, DEFAULT_BUFLEN, 0);
 			if (iResult > 0) {
 				std::string msg = std::string(recvbuf).substr(0, iResult);
-				handler->handleMessage(&msg);
-				//TODO: copy to clipboard
+				Data::Message message = { &msg, socket, false };
+				handler->handleMessage(&message);
 			}
 			else {
 				iResult = closesocket(socket);
 				break;
 			}
 		} while (iResult > 0);
-		//TODO: remove 
 	}
 }

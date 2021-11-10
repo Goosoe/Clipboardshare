@@ -5,33 +5,27 @@
 namespace Data {
 
 	/*Broadcasts a message if it's valid (not empty)*/
-	void DataHandler::broadcast(const std::string* message) {
+	void DataHandler::broadcast(Message* message) {
+
+		connector->broadcast(message);
+		updateClient(message);
+	}
+
+
+	void DataHandler::handleMessage(Message* message) {
 		if (connector == nullptr || view == nullptr) {
 			std::cout << "The connector or view is not linked to this DataHandler" << std::endl;
 			return;
 		}
-		if (message->empty()) {
+
+		if (message->msg->empty()) {
 			return;
 		}
-		connector->broadcast(message);
-		view->updateScreen(message);
-	}
-
-	void DataHandler::handleMessage(const std::string* message) {
-		if (message->empty()) {
-			return;
-		}
-
-		if (isServer) {
+		if (message->toSend || isServer) {
 			broadcast(message);
 		}
 		else {
-			if (view == nullptr) {
-				std::cout << "The view is not connected to this DataHandler" << std::endl;
-				return;
-			}
-			view->updateScreen(message);
-			Bridge::SysBridge::sendToClipboard(message);
+			updateClient(message);
 		}
 	}
 
@@ -42,5 +36,10 @@ namespace Data {
 		else {
 			connector->initClient(ip);
 		}
+	}
+	
+	void DataHandler::updateClient(Message* message) {
+		view->updateScreen(message->msg);
+		Bridge::SysBridge::sendToClipboard(message->msg);
 	}
 }

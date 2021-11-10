@@ -24,6 +24,7 @@ namespace Bridge {
 			CloseClipboard();
 			return;
 		}
+		/*TODO: hmmm*/
 		memcpy(GlobalLock(hg), msg->c_str(), msg->size() + 1);
 		GlobalUnlock(hg);
 		SetClipboardData(CF_TEXT, hg);
