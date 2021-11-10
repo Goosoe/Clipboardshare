@@ -13,9 +13,6 @@ namespace Ui {
 	}
 
 	void CliView::updateScreen(const std::string* clipboardMsg) {
-		//if (clipboardMsg->empty()) {
-		//	clipboardMsg = const_cast<const std::string*>(&oldMessage);
-		//}
 		Bridge::SysBridge::clearWindow();
 		if (isConnected) {
 			screenLock.lock();
@@ -35,8 +32,6 @@ namespace Ui {
 	std::string CliView::readInput() {
 		std::string messageToSend;
 		std::getline(std::cin, messageToSend);
-		//copies the message 
-		//oldMessage = std::string(messageToSend);
 		return messageToSend;
 	}
 

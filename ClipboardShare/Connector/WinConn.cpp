@@ -10,7 +10,7 @@ namespace Connector {
 
 	bool WinConn::broadcast(Data::Message* message) {
 		for each (int socket in sockets) {
-			if (socket != message->senderSocket) {
+			if (socket != message->senderSocketId) {
 				send(socket, message->msg->c_str(), message->msg->size(), 0);
 			}
 		}
@@ -193,7 +193,7 @@ namespace Connector {
 			}
 			else {
 				iResult = closesocket(socket);
-				break;
+				removeSocket(socket);
 			}
 		} while (iResult > 0);
 	}
