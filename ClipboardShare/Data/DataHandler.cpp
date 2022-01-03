@@ -6,7 +6,7 @@ namespace Data {
 
 	/*Broadcasts a message if it's valid (not empty)*/
 	void DataHandler::broadcast(Message* message) {
-
+		message->msg->append(NULL_TERMINATOR);
 		connector->broadcast(message);
 		updateClient(message);
 	}

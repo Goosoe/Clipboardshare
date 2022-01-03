@@ -188,6 +188,10 @@ namespace Connector {
 			iResult = recv(socket, recvbuf, DEFAULT_BUFLEN, 0);
 			if (iResult > 0) {
 				std::string msg = std::string(recvbuf).substr(0, iResult);
+				while (iResult == DEFAULT_BUFLEN && msg.substr(msg.length() - 3, msg.length() - 1) != Data::NULL_TERMINATOR) {
+					iResult = recv(socket, recvbuf, DEFAULT_BUFLEN, 0);
+					msg.append(std::string(recvbuf).substr(0, iResult));
+				}
 				Data::Message message = { &msg, socket, false };
 				handler->handleMessage(&message);
 			}

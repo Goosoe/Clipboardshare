@@ -1,6 +1,7 @@
 #pragma once
 #include<string>
 #include "../Bridge/SysBridge.h"
+
 namespace Connector {
 	class AConnector;
 }
@@ -9,6 +10,7 @@ namespace Ui {
 }
 
 namespace Data {
+	static const std::string NULL_TERMINATOR = "\0";
 	/*Used to hold the necessary data to successfully send a message and broadcast it if necessary*/
 	struct Message {
 		//If message is created locally, change this value only
