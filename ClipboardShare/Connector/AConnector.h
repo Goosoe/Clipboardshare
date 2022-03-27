@@ -22,7 +22,7 @@ class AConnector {
     /*Broadcasts a message to all registered sockets*/
     virtual bool broadcast(Data::Message* message) = 0;
     /*Connects to a DataHandler object*/
-    inline virtual void setDataHandler(Data::DataHandler* handler) { this->handler = handler; };
+    inline void setDataHandler(Data::DataHandler* handler) { this->handler = handler; };
 
    protected:
 // TODO: why defines?

@@ -1,10 +1,10 @@
-#pragma once
 #include "WinConn.h"
 #ifdef _WIN32
 #include <stdio.h>
+#include <string.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
-#include <string.h>
+
 #include <iostream>
 #include <thread>
 
@@ -24,9 +24,9 @@ void WinConn::initServer() {
     struct addrinfo* result = NULL;
     struct addrinfo hints;
 
-    //int iSendResult;
+    // int iSendResult;
     char recvbuf[DEFAULT_BUFLEN];
-    //int recvbuflen = DEFAULT_BUFLEN;
+    // int recvbuflen = DEFAULT_BUFLEN;
 
     // Initialize Winsock
     iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
@@ -201,5 +201,5 @@ void WinConn::receiveLoop(const int socket) {
         }
     } while (iResult > 0);
 }
-}  // namespace 
+}  // namespace Connector
 #endif

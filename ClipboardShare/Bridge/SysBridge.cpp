@@ -1,34 +1,54 @@
-#pragma once
 #include "SysBridge.h"
-#include <conio.h>
+
 #include <stdio.h>
+
+#ifdef _WIN32
+/*WINDOWS INCLUDES*/
+#include <conio.h>
+
+#include <cmath>
+#include <complex>
 #include <cstdlib>
+#include <iomanip>
+#include <iostream>
+
 #include "Windows.h"
 #include "winuser.h"
-#include <cmath>
-#include <iostream>
-#include <iomanip>
-#include <complex>
 
+#elif __unix__
+/*UNIX INCLUDES*/
+
+#endif
 namespace Bridge {
-	void SysBridge::clearWindow() {
-		/*TODO: not safe & only appliable on windows*/
-		system("cls");
-	}
 
-	void SysBridge::sendToClipboard(const std::string* msg) {
-		OpenClipboard(GetDesktopWindow());
-		EmptyClipboard();
-		HGLOBAL hg = GlobalAlloc(GMEM_MOVEABLE, msg->size() + 1);
-		if (!hg) {
-			CloseClipboard();
-			return;
-		}
-		/*TODO: hmmm*/
-		memcpy(GlobalLock(hg), msg->c_str(), msg->size() + 1);
-		GlobalUnlock(hg);
-		SetClipboardData(CF_TEXT, hg);
-		CloseClipboard();
-		GlobalFree(hg);
-	}
+#ifdef _WIN32
+/*WINDOWS IMPLEMENTATION*/
+void SysBridge::clearWindow() {
+    /*TODO: not safe & only appliable on windows*/
+    system("cls");
 }
+
+void SysBridge::sendToClipboard(const std::string* msg) {
+    OpenClipboard(GetDesktopWindow());
+    EmptyClipboard();
+    HGLOBAL hg = GlobalAlloc(GMEM_MOVEABLE, msg->size() + 1);
+    if (!hg) {
+        CloseClipboard();
+        return;
+    }
+    /*TODO: hmmm*/
+    memcpy(GlobalLock(hg), msg->c_str(), msg->size() + 1);
+    GlobalUnlock(hg);
+    SetClipboardData(CF_TEXT, hg);
+    CloseClipboard();
+    GlobalFree(hg);
+}
+#elif __unix__
+/*UNIX IMPLEMENTATION*/
+void SysBridge::clearWindow() {
+}
+
+void SysBridge::sendToClipboard(const std::string* msg) {
+}
+#endif
+}  // namespace Bridge

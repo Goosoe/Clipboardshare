@@ -3,29 +3,28 @@
 
 #include <stdio.h>
 
+#include "Data/DataHandler.h"
+#include "Ui/CliView.h"
+
 #ifdef _WIN32
 #include "Connector/WinConn.h"
 #elif __unix__
 #include "Connector/LinConn.h"
 #endif
 
-#include "Data/DataHandler.h"
-#include "Ui/CliView.h"
-
-
 int main() {
-    //Connector::AConnector *conn = nullptr;
+    // Connector::AConnector *conn = nullptr;
 #ifdef _WIN32
     Connector::WinConn conn = Connector::WinConn();
 #elif __unix__
-    conn = &Connector::LinConn conn();
+    Connector::LinConn conn = Connector::LinConn();
 #endif
- 
-    Data::DataHandler dHandler(&conn);
+
+    Data::DataHandler dHandler = Data::DataHandler(&conn);
 
     conn.setDataHandler(&dHandler);
 
-    Ui::CliView view(&dHandler);
+    Ui::CliView view = Ui::CliView(&dHandler);
 
     dHandler.setView(&view);
 

@@ -15,20 +15,22 @@
 #include "../Data/DataHandler.h"
 
 namespace Connector {
+
 void LinConn::initServer() {
     int sockfd, clientSocket;
     socklen_t clilen;
     struct sockaddr_in serv_addr, cli_addr;
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd < 0)
-        error("ERROR opening socket");
+    if (sockfd < 0) {
+        std::cout << "ERROR opening socket" << std::endl;
+    }
     bzero((char *)&serv_addr, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = INADDR_ANY;
     serv_addr.sin_port = DEFAULT_PORT;
-    if (bind(sockfd, (struct sockaddr *)&serv_addr,
-             sizeof(serv_addr)) < 0)
-        error("ERROR on binding");
+    if (bind(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
+        std::cout << ("ERROR on binding") << std::endl;
+    }
     listen(sockfd, 5);
     clilen = sizeof(cli_addr);
 
@@ -49,7 +51,6 @@ void LinConn::initServer() {
 void LinConn::initClient(const std::string *ip) {
     int connectSocket = 0, reader;
     struct sockaddr_in serv_addr;
-    char *message = "A message from Client !";
     char buffer[DEFAULT_BUFLEN] = {0};
     if ((connectSocket = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         printf("Socket creation error !");
@@ -125,9 +126,9 @@ bool LinConn::broadcast(Data::Message *message) {
     return true;
 }
 
-void error(const char *msg) {
-    perror(msg);
-    exit(1);
+bool LinConn::disconnect() {
+    // TODO:
+    return false;
 }
 }  // namespace Connector
 #endif
