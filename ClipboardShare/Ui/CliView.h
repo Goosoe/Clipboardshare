@@ -1,10 +1,7 @@
 #pragma once
 #include <string>
-#include <vector>
-#include <iostream>
-#include <thread>
 #include <mutex>
-#include "../Bridge/SysBridge.h"
+
 
 namespace Data {
 	class DataHandler;

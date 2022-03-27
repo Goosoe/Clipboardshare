@@ -26,6 +26,7 @@ namespace Connector {
 		virtual void setDataHandler(Data::DataHandler* handler) { this->handler = handler; };
 
 	protected:
+		//TODO: why defines?
 		#define DEFAULT_PORT "8008"
 		#define DEFAULT_BUFLEN 512
 		Data::DataHandler* handler = nullptr;

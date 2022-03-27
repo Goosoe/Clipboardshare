@@ -3,6 +3,9 @@
 #include <iostream>
 #include "../Data/DataHandler.h"
 #include <thread>
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#include <stdio.h>
 
 namespace Connector {
 

@@ -1,7 +1,10 @@
 #pragma once
 #include "CliView.h"
 #include "..\Data\DataHandler.h"
-
+#include <vector>
+#include <iostream>
+#include <thread>
+#include "../Bridge/SysBridge.h"
 namespace Ui {
 
 	std::mutex CliView::screenLock;
