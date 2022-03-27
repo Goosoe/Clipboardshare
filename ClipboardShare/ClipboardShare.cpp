@@ -2,23 +2,34 @@
 //
 
 #include <stdio.h>
-#include"Connector/WinConn.h"
-#include"Data/DataHandler.h"
-#include"Ui/CliView.h"
-int main(){
-	Connector::WinConn conn = Connector::WinConn() ;
 
-	Data::DataHandler dHandler = Data::DataHandler(&conn);
+#ifdef _WIN32
+#include "Connector/WinConn.h"
+#elif __unix__
+#include "Connector/LinConn.h"
+#endif
 
-	conn.setDataHandler(&dHandler);
+#include "Data/DataHandler.h"
+#include "Ui/CliView.h"
 
-	Ui::CliView view = Ui::CliView(&dHandler);
 
-	dHandler.setView(&view);
-	
-	view.readInputLoop();
+int main() {
+    //Connector::AConnector *conn = nullptr;
+#ifdef _WIN32
+    Connector::WinConn conn = Connector::WinConn();
+#elif __unix__
+    conn = &Connector::LinConn conn();
+#endif
+ 
+    Data::DataHandler dHandler(&conn);
 
-	return 0;
+    conn.setDataHandler(&dHandler);
+
+    Ui::CliView view(&dHandler);
+
+    dHandler.setView(&view);
+
+    view.readInputLoop();
+
+    return 0;
 }
-
-
