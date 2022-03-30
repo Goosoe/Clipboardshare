@@ -4,7 +4,7 @@
 namespace Connector {
 class LinConn : public AConnector {
    public:
-    LinConn(){}; 
+    LinConn(){};
     void initServer() override;
     void initClient(const std::string* ip) override;
     bool broadcast(Data::Message* message) override;

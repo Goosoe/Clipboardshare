@@ -13,7 +13,7 @@ find_package(Threads REQUIRED)
 if(WIN32)
     add_executable (ClipboardShare "ClipboardShare.cpp" "Connector/WinConn.cpp"  "Data/DataHandler.cpp" "Ui/CliView.cpp"  "Bridge/SysBridge.cpp")
     target_link_libraries(ClipboardShare wsock32 ws2_32)
-    elseif(UNIX)
+elseif(UNIX)
     add_executable (ClipboardShare "ClipboardShare.cpp" "Connector/LinConn.cpp"  "Data/DataHandler.cpp" "Ui/CliView.cpp"  "Bridge/SysBridge.cpp")
     target_link_libraries(ClipboardShare ${CMAKE_THREAD_LIBS_INIT})
   #TODO: else deny
