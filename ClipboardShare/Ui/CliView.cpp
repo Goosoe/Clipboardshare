@@ -11,6 +11,7 @@ namespace Ui {
 std::mutex CliView::screenLock;
 
 CliView::CliView(Data::DataHandler* dHandler) {
+    // this->isConnected = false;
     setDataHandler(dHandler);
     // must be the last thing being called
     getSetupInput();
@@ -18,18 +19,18 @@ CliView::CliView(Data::DataHandler* dHandler) {
 
 void CliView::updateScreen(const std::string* clipboardMsg) {
     Bridge::SysBridge::clearWindow();
-    if (isConnected) {
-        screenLock.lock();
-        if (dHandler->getServerFlag()) {
-            std::cout << "HOST" << std::endl;
-        } else {
-            std::cout << "CLIENT" << std::endl;
-        }
-        // screen.subBanner =
-        std::cout << "Clipboard\n> " + *clipboardMsg << std::endl;
-        std::cout << "Share to clipboard\n> ";
-        screenLock.unlock();
+    // if (isConnected) {
+    screenLock.lock();
+    if (dHandler->getServerFlag()) {
+        std::cout << "HOST" << std::endl;
+    } else {
+        std::cout << "CLIENT" << std::endl;
     }
+    // screen.subBanner =
+    std::cout << "Clipboard\n> " + *clipboardMsg << std::endl;
+    std::cout << "Share to clipboard\n> ";
+    screenLock.unlock();
+    // }
 }
 
 std::string CliView::readInput() {
@@ -74,6 +75,7 @@ void CliView::getSetupInput() {
             t.detach();
         }
     }
+    // setConnectedFlag(true);
     std::string clear = "";
     updateScreen(&clear);
 }

@@ -14,8 +14,10 @@ class CliView {
     CliView(Data::DataHandler* dHandler);
     /*Updates the screen with the message received*/
     void updateScreen(const std::string* clipboardMsg = nullptr);
+    
     /*Setter for the flag that identifies if the client is connected to a server*/
-    inline void setConnectedFlag(bool isConnected) { this->isConnected = isConnected; }
+    // inline void setConnectedFlag(bool isConnected) { this->isConnected = isConnected; }
+    
     /*Connects to a DataHandler object*/
     inline void setDataHandler(Data::DataHandler* dHandler) { this->dHandler = dHandler; };
     /*Starts the loop that is always reading input whenever given. Best used in a separate thread*/
@@ -23,7 +25,7 @@ class CliView {
 
    private:
     Data::DataHandler* dHandler;
-    bool isConnected;
+    // bool isConnected;
     static std::mutex screenLock;
     /*Specific part of the code where it reads the input*/
     std::string readInput();
