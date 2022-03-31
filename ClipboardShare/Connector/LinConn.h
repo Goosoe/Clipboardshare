@@ -2,9 +2,9 @@
 #include "AConnector.h"
 
 namespace Connector {
-class WinConn : public AConnector {
+class LinConn : public AConnector {
    public:
-    WinConn(){};
+    LinConn(){};
     void initServer() override;
     void initClient(const std::string* ip) override;
     bool broadcast(Data::Message* message) override;
