@@ -12,3 +12,5 @@ x86/
 cmake*/
 
 out
+build
+.vscode
