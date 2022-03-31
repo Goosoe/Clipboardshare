@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-#include "../ClipboardXX/include/clipboardxx.hpp"
+// #include "../ClipboardXX/include/clipboardxx.hpp"
 
 /**
  * @brief Class that bridges the program with the OS and allows the interaction from the program to the OS.
@@ -17,6 +17,6 @@ class SysBridge {
     static void sendToClipboard(std::string* msg);
 
    private:
-    static clipboardxx::clipboard board;
+    // static clipboardxx::clipboard board;
 };
 }  // namespace Bridge
