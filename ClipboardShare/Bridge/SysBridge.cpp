@@ -35,7 +35,6 @@ void SysBridge::sendToClipboard(const std::string* msg) {
         CloseClipboard();
         return;
     }
-    /*TODO: hmmm*/
     memcpy(GlobalLock(hg), msg->c_str(), msg->size() + 1);
     GlobalUnlock(hg);
     SetClipboardData(CF_TEXT, hg);
@@ -51,6 +50,7 @@ void SysBridge::clearWindow() {
 
 void SysBridge::sendToClipboard(std::string* msg) {
     // TODO: X11 is hard
+    // https://github.com/Arian8j2/ClipboardXX
 }
 
 }  // namespace Bridge

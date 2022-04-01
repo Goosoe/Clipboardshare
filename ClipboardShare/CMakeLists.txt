@@ -6,7 +6,7 @@ cmake_minimum_required (VERSION 3.14)
 # Add source to this project's executable.
 # add_subdirectory(ClipboardXX)
 
-find_package(Threads REQUIRED)
+
 # find_package(X11 REQUIRED)
 # if(NOT X11_FOUND)
 #     message("ERROR: x11 not found")
@@ -20,10 +20,11 @@ if(WIN32)
     add_executable (ClipboardShare "ClipboardShare.cpp" "Connector/WinConn.cpp"  "Data/DataHandler.cpp" "Ui/CliView.cpp"  "Bridge/SysBridge.cpp")
     target_link_libraries(ClipboardShare wsock32 ws2_32)
 elseif(UNIX)
+    find_package(Threads REQUIRED)
     add_executable (ClipboardShare "ClipboardShare.cpp" "Connector/LinConn.cpp"  "Data/DataHandler.cpp" "Ui/CliView.cpp"  "Bridge/SysBridge.cpp")
     target_link_libraries(ClipboardShare ${CMAKE_THREAD_LIBS_INIT} )
     # target_link_libraries(ClipboardShare ${X11_xcb_LIB})
-  #TODO: else deny
+    #TODO: else deny
 endif()
 # target_link_libraries(ClipboardShare ClipboardXX)
 
