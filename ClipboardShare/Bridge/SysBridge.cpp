@@ -11,8 +11,8 @@
 #include <iomanip>
 #include <iostream>
 
-// #include "Windows.h"
-// #include "winuser.h"
+#include "Windows.h"
+#include "winuser.h"
 
 // #elif __unix__
 /*UNIX INCLUDES*/
@@ -46,11 +46,11 @@ void SysBridge::sendToClipboard(const std::string* msg) {
 void SysBridge::clearWindow() {
     system("clear");
 }
-#endif
 
-void SysBridge::sendToClipboard(std::string* msg) {
+void SysBridge::sendToClipboard(const std::string* msg) {
     // TODO: X11 is hard
     // https://github.com/Arian8j2/ClipboardXX
 }
 
+#endif
 }  // namespace Bridge

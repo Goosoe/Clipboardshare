@@ -14,7 +14,7 @@ class SysBridge {
     /*Clears the CLI window of the respective OS*/
     static void clearWindow();
     /*sends a string message to the clipboard of the respective OS*/
-    static void sendToClipboard(std::string* msg);
+    static void sendToClipboard(const std::string* msg);
 
    private:
     // static clipboardxx::clipboard board;
