@@ -165,7 +165,7 @@ void WinConn::initClient(const std::string* ip) {
 }
 
 bool WinConn::broadcast(Data::Message* message) {
-    for each (int socket in sockets) {
+    for (int socket = 0; socket < sockets.size(); socket++) {
         if (socket != message->senderSocketId) {
             send(socket, message->msg->c_str(), message->msg->size(), 0);
         }
